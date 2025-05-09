@@ -6,6 +6,7 @@ dotenv.config();
 let s: any;
 console.log("ENVIRONMENT: " + process.env?.ENVIRONMENT);
 console.log("ENVIRONMENT: " + process.env?.SUPABASE_URI);
+console.log("encoded     " + encodeURIComponent("iFL*Lq0GfVIe8QLN"));
 if (process.env?.ENVIRONMENT === "production") {
   s = new Sequelize(process.env?.SUPABASE_URI as string, {
     dialect: "postgres",
