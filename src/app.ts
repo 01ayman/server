@@ -28,7 +28,7 @@ const app = Fastify({ logger: true });
 // });
 
 app.register(fastifyCors, {
-  origin: ["http://localhost:5000"],
+  origin: ["http://localhost:5000", "https://01ayman.github.io"],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
