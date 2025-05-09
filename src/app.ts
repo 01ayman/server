@@ -29,9 +29,9 @@ const app = Fastify({ logger: true });
 
 app.register(fastifyCors, {
   origin: [
+    "https://chesslearn.netlify.app",
     "http://localhost:5000",
     "https://01ayman.github.io",
-    "https://chesslearn.netlify.app",
   ],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

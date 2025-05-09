@@ -21,7 +21,11 @@ const app = (0, fastify_1.default)({ logger: true });
 //   origin: "*",
 // });
 app.register(cors_1.fastifyCors, {
-    origin: ["http://localhost:5000"],
+    origin: [
+        "https://chesslearn.netlify.app",
+        "http://localhost:5000",
+        "https://01ayman.github.io",
+    ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
