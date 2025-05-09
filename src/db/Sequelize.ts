@@ -5,6 +5,7 @@ dotenv.config();
 
 let s: any;
 console.log("ENVIRONMENT: " + process.env?.ENVIRONMENT);
+console.log("ENVIRONMENT: " + process.env?.SUPABASE_URI);
 if (process.env?.ENVIRONMENT === "production") {
   s = new Sequelize(process.env?.SUPABASE_URI as string, {
     dialect: "postgres",
@@ -35,10 +36,10 @@ export const sequelize = s;
 export async function testDBConnection() {
   try {
     await sequelize.authenticate();
-    console.log("✅ Conexión a MySQL exitosa.");
+    console.log("✅ Conexión a PostgreSQL exitosa.");
     return true;
   } catch (error) {
-    console.error("❌ Error conectando a MySQL:", error);
+    console.error("❌ Error conectando a PostgreSQL:", error);
     return false;
   }
 }
