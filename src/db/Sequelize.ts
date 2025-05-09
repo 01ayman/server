@@ -3,11 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-let sequelize: any;
+let s: any;
 
 if (process.env?.ENVIRONMENT === "production") {
-  sequelize = new Sequelize(process.env?.SUPABASE_URI as string, {
-    
+  s = new Sequelize(process.env?.SUPABASE_URI as string, {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
@@ -18,7 +17,7 @@ if (process.env?.ENVIRONMENT === "production") {
     logging: false, // Muestra las queries en consola
   });
 } else {
-  sequelize = new Sequelize(
+  s = new Sequelize(
     process.env.DB_NAME || "chesslearn",
     process.env.DB_USER || "root",
     process.env.DB_PASSWORD || "",
@@ -30,7 +29,7 @@ if (process.env?.ENVIRONMENT === "production") {
   );
 }
 
-export default sequelize;
+export const sequelize = s;
 
 // Función mejorada de prueba de conexión
 export async function testDBConnection() {

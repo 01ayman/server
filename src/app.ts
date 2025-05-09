@@ -57,7 +57,7 @@ async function start() {
       .then(() => {
         console.log("Tablas sincronizadas correctamente.");
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Error al sincronizar las tablas:", err);
       });
     console.log("✅ Modelos sincronizados con la base de datos");
