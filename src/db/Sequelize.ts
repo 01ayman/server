@@ -1,0 +1,29 @@
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+export const sequelize = new Sequelize(
+  process.env.DB_NAME || "chesslearn",
+  process.env.DB_USER || "root",
+  process.env.DB_PASSWORD || "",
+  {
+    host: process.env.DB_HOST || "localhost",
+    dialect: "postgres",
+    logging: false, // Muestra las queries en consola
+  }
+);
+
+// Función mejorada de prueba de conexión
+export async function testDBConnection() {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Conexión a MySQL exitosa.");
+    return true;
+  } catch (error) {
+    console.error("❌ Error conectando a MySQL:", error);
+    return false;
+  }
+}
+
+// module.exports = sequelize;
