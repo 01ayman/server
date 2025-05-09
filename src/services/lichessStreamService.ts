@@ -45,7 +45,12 @@ async function streamGame(request: FastifyRequest, reply: FastifyReply) {
   reply.raw.setHeader("Content-Type", "text/event-stream");
   reply.raw.setHeader("Cache-Control", "no-cache");
   reply.raw.setHeader("Connection", "keep-alive");
-  reply.raw.setHeader("Access-Control-Allow-Origin", "http://localhost:5000");
+  reply.raw.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.ENVIRONMENT === "production"
+      ? "https://chesslearn.netlify.app"
+      : "http://localhost:5000"
+  );
   reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
   reply.raw.flushHeaders();
 
