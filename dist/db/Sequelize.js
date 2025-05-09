@@ -10,24 +10,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || "chesslearn", process.env.DB_USER || "root", process.env.DB_PASSWORD || "", {
     host: process.env.DB_HOST || "localhost",
-    // dialect: "mysql",
     dialect: "postgres",
-    // port: parseInt(process.env.DB_PORT || "3306"),
     logging: false, // Muestra las queries en consola
-    // pool: {
-    //   max: 5,
-    //   min: 0,
-    //   acquire: 30000,
-    //   idle: 10000,
-    // },
-    // define: {
-    //   timestamps: true,
-    //   underscored: true,
-    //   freezeTableName: true,
-    // },
-    // dialectOptions: {
-    //   decimalNumbers: true,
-    // },
 });
 // Función mejorada de prueba de conexión
 async function testDBConnection() {
@@ -41,4 +25,4 @@ async function testDBConnection() {
         return false;
     }
 }
-module.exports = exports.sequelize;
+// module.exports = sequelize;

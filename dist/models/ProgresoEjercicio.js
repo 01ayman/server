@@ -5,7 +5,6 @@ const sequelize_1 = require("sequelize");
 const Sequelize_1 = require("../db/Sequelize");
 const Ejercicio_1 = require("./Ejercicio");
 const Usuario_1 = require("./Usuario"); // Asume que tienes un modelo Usuario
-const Leccion_1 = require("./Leccion");
 class ProgresoEjercicio extends sequelize_1.Model {
 }
 exports.ProgresoEjercicio = ProgresoEjercicio;
@@ -36,5 +35,4 @@ ProgresoEjercicio.init({
     ],
 });
 ProgresoEjercicio.belongsTo(Usuario_1.Usuario, { foreignKey: "usuario_id" });
-ProgresoEjercicio.belongsTo(Leccion_1.Leccion, { foreignKey: "leccion_id" });
 ProgresoEjercicio.belongsTo(Ejercicio_1.Ejercicio, { foreignKey: "ejercicio_id" });

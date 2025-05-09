@@ -40,12 +40,13 @@ async function getEjercicios() {
         return ejercicios;
     }
     catch (err) {
-        throw new Error();
+        console.error("Error al obtener ejercicios:", err); // Aquí podemos ver el error en la consola
+        throw new Error(`Error al obtener ejercicios: ${err.message || err}`); // Lanza un error más descriptivo
     }
 }
 async function obtenerProgresoLeccion(usuario_id, leccion_id) {
     try {
-        const resultado = await models_1.Ejercicio.findAll({
+        const ejercicios = await models_1.Ejercicio.findAll({
             where: { idLeccion: leccion_id },
             attributes: ["id"],
             include: [
@@ -58,14 +59,14 @@ async function obtenerProgresoLeccion(usuario_id, leccion_id) {
                 },
             ],
         });
-        const total = resultado.length;
-        const completados = resultado.filter((e) => e.progreso?.completado).length;
+        const total = ejercicios.length;
+        const completados = ejercicios.filter((e) => e.progreso?.completado).length;
         const estado = completados === total
             ? "completados"
             : completados > 0
                 ? "en_progreso"
                 : "no_iniciado";
-        const ejerciciosFormateados = resultado.map((e) => ({
+        const ejerciciosFormateados = ejercicios.map((e) => ({
             id: e.id,
             completado: e.progreso?.completado || false,
         }));

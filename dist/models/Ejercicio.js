@@ -30,7 +30,7 @@ Ejercicio.init({
         allowNull: false,
     },
     nivel: {
-        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
 }, {

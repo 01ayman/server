@@ -17,10 +17,9 @@ async function obtenerEjercicios(request, reply) {
     return await (0, LeccionesRepository_1.getEjercicios)();
 }
 async function insertarProgreso(request, reply) {
-    const { usuario_id, leccion_id, ejercicio_id } = request.body;
+    const { usuario_id, ejercicio_id } = request.body;
     const ejercicio = {
         usuario_id,
-        leccion_id,
         ejercicio_id,
         completado: true,
         fecha_completado: new Date(),

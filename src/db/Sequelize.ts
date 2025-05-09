@@ -3,16 +3,34 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const sequelize = new Sequelize(
-  process.env.DB_NAME || "chesslearn",
-  process.env.DB_USER || "root",
-  process.env.DB_PASSWORD || "",
-  {
-    host: process.env.DB_HOST || "localhost",
+let sequelize: any;
+
+if (process.env?.ENVIRONMENT === "production") {
+  sequelize = new Sequelize(process.env?.SUPABASE_URI as string, {
+    
     dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Supabase requiere esto
+      },
+    },
     logging: false, // Muestra las queries en consola
-  }
-);
+  });
+} else {
+  sequelize = new Sequelize(
+    process.env.DB_NAME || "chesslearn",
+    process.env.DB_USER || "root",
+    process.env.DB_PASSWORD || "",
+    {
+      host: process.env.DB_HOST || "localhost",
+      dialect: "postgres",
+      logging: false, // Muestra las queries en consola
+    }
+  );
+}
+
+export default sequelize;
 
 // Función mejorada de prueba de conexión
 export async function testDBConnection() {
