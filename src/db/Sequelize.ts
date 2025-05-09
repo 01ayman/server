@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let s: any;
-
+console.log("ENVIRONMENT: " + process.env?.ENVIRONMENT);
 if (process.env?.ENVIRONMENT === "production") {
   s = new Sequelize(process.env?.SUPABASE_URI as string, {
     dialect: "postgres",
