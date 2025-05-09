@@ -1,6 +1,6 @@
 // src/routes/streamRoute.ts
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import fetch from "node-fetch";
+import { fetch } from "undici";
 import { PassThrough, Readable } from "stream";
 import { request as UndiciRequest } from "undici";
 const API_TOKEN = process.env.LICHESS_TOKEN;
