@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerRoutes = registerRoutes;
-const node_fetch_1 = __importDefault(require("node-fetch"));
 const undici_1 = require("undici");
+const undici_2 = require("undici");
 const API_TOKEN = process.env.LICHESS_TOKEN;
 async function registerRoutes(server) {
     server.get("/stream/:gameId", streamGame);
@@ -15,7 +12,7 @@ async function abandonarPartida(request, reply) {
     const { gameId } = request.params;
     const resignUrl = `https://lichess.org/api/board/game/${gameId}/resign`;
     try {
-        const response = await (0, node_fetch_1.default)(resignUrl, {
+        const response = await (0, undici_1.fetch)(resignUrl, {
             headers: {
                 Authorization: `Bearer ${API_TOKEN}`,
             },
@@ -44,7 +41,7 @@ async function streamGame(request, reply) {
     reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
     reply.raw.flushHeaders();
     try {
-        const { body } = await (0, undici_1.request)(streamUrl, {
+        const { body } = await (0, undici_2.request)(streamUrl, {
             headers,
             method: "GET",
         });
