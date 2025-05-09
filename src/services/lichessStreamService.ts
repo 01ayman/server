@@ -40,17 +40,16 @@ async function streamGame(request: FastifyRequest, reply: FastifyReply) {
     Authorization: `Bearer ${API_TOKEN}`,
     Accept: "application/x-ndjson",
   };
-
+  const location =
+    process.env.ENVIRONMENT == "production"
+      ? "https://chesslearn.netlify.app"
+      : "http://localhost:5000";
+  console.log(location);
   // Establece headers SSE al cliente
   reply.raw.setHeader("Content-Type", "text/event-stream");
   reply.raw.setHeader("Cache-Control", "no-cache");
   reply.raw.setHeader("Connection", "keep-alive");
-  reply.raw.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.ENVIRONMENT === "production"
-      ? "https://chesslearn.netlify.app"
-      : "http://localhost:5000"
-  );
+  reply.raw.setHeader("Access-Control-Allow-Origin", location);
   reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
   reply.raw.flushHeaders();
 
