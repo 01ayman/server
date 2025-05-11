@@ -8,10 +8,11 @@ import { setupSockets } from "./socket/socket";
 
 import Fastify from "fastify";
 import dotenv from "dotenv";
-import cors, { fastifyCors } from "@fastify/cors";
+import { fastifyCors } from "@fastify/cors";
 import "./models";
 import jwt from "@fastify/jwt";
 import { Server } from "socket.io";
+import fastifyMultipart from "fastify-multipart";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -23,17 +24,13 @@ dotenv.config();
 
 const app = Fastify({ logger: true });
 
-// app.register(cors, {
-//   origin: "*",
-// });
-
 app.register(fastifyCors, {
   origin: [
     "https://chesslearn.netlify.app",
     "http://localhost:5000",
     "https://01ayman.github.io",
   ],
-  methods: ["GET", "POST", "OPTIONS"],
+  methods: ["GET", "POST", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 });
@@ -42,6 +39,7 @@ app.register(AuthRoutes, { prefix: "/api/auth" });
 app.register(UsuarioRoutes, { prefix: "/api/usuarios" });
 app.register(LichessRoutes, { prefix: "/api/lichess" });
 app.register(LeccionesRoutes, { prefix: "/api/lecciones" });
+app.register(fastifyMultipart);
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET!,

@@ -207,7 +207,10 @@ export async function verificarLogin(
   recordarme: boolean
 ): Promise<ResultLogin | ResultUser> {
   try {
+    console.log(correo);
+    console.log(contrasena);
     const usuario = await Usuario.findOne({ where: { correo } });
+    console.log(usuario);
     if (!usuario) {
       return chessError({ code: 404, message: "No se encontró el usuario" });
     }
@@ -221,9 +224,18 @@ export async function verificarLogin(
     if (!valid) {
       return chessError({ code: 400, message: "La contraseña es incorrecta" });
     }
-    const dataToken = { id: usuario.id, rol: usuario.rol };
+    const dataToken = {
+      id: usuario.id,
+      correo: usuario.correo,
+      avatar: usuario.avatar,
+      elo: usuario.elo,
+      nombre: usuario.nombre,
+      rol: usuario.rol,
+    };
 
     const token = generarToken(dataToken, recordarme);
+    console.log(token);
+    console.log(jwt.verify(token, process.env.JWT_SECRET!));
     const data = {
       token,
       usuario: {
@@ -234,6 +246,7 @@ export async function verificarLogin(
     };
     return data;
   } catch (error) {
+    console.log("\nError: " + error);
     return chessError({ code: 400, message: "El correo ya está registrado" });
   }
 }
@@ -243,7 +256,14 @@ async function findUserByCorreo(correo: string) {
 }
 
 export function generarToken(
-  usuario: { id: number; rol: string },
+  usuario: {
+    id: number;
+    rol?: string;
+    correo?: string;
+    avatar?: string | null;
+    elo?: number;
+    nombre?: string;
+  },
   recordar: boolean
 ) {
   const tiempoExpiracion = recordar ? "30d" : "1h";
@@ -251,6 +271,10 @@ export function generarToken(
     {
       id: usuario.id,
       rol: usuario.rol,
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      avatar: usuario.avatar,
+      elo: usuario.elo,
     },
     process.env.JWT_SECRET!,
     {
