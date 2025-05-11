@@ -165,7 +165,10 @@ async function verificarToken(id, token) {
 }
 async function verificarLogin(correo, contrasena, recordarme) {
     try {
+        console.log(correo);
+        console.log(contrasena);
         const usuario = await Usuario_1.Usuario.findOne({ where: { correo } });
+        console.log(usuario);
         if (!usuario) {
             return (0, Error_1.chessError)({ code: 404, message: "No se encontró el usuario" });
         }
@@ -179,8 +182,17 @@ async function verificarLogin(correo, contrasena, recordarme) {
         if (!valid) {
             return (0, Error_1.chessError)({ code: 400, message: "La contraseña es incorrecta" });
         }
-        const dataToken = { id: usuario.id, rol: usuario.rol };
+        const dataToken = {
+            id: usuario.id,
+            correo: usuario.correo,
+            avatar: usuario.avatar,
+            elo: usuario.elo,
+            nombre: usuario.nombre,
+            rol: usuario.rol,
+        };
         const token = generarToken(dataToken, recordarme);
+        console.log(token);
+        console.log(jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET));
         const data = {
             token,
             usuario: {
@@ -192,6 +204,7 @@ async function verificarLogin(correo, contrasena, recordarme) {
         return data;
     }
     catch (error) {
+        console.log("\nError: " + error);
         return (0, Error_1.chessError)({ code: 400, message: "El correo ya está registrado" });
     }
 }
@@ -203,6 +216,10 @@ function generarToken(usuario, recordar) {
     return jsonwebtoken_1.default.sign({
         id: usuario.id,
         rol: usuario.rol,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        avatar: usuario.avatar,
+        elo: usuario.elo,
     }, process.env.JWT_SECRET, {
         expiresIn: tiempoExpiracion,
     });

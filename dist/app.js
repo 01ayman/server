@@ -15,18 +15,16 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = require("@fastify/cors");
 require("./models");
 const jwt_1 = __importDefault(require("@fastify/jwt"));
+const fastify_multipart_1 = __importDefault(require("fastify-multipart"));
 dotenv_1.default.config();
 const app = (0, fastify_1.default)({ logger: true });
-// app.register(cors, {
-//   origin: "*",
-// });
 app.register(cors_1.fastifyCors, {
     origin: [
         "https://chesslearn.netlify.app",
         "http://localhost:5000",
         "https://01ayman.github.io",
     ],
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 });
@@ -35,6 +33,7 @@ app.register(AuthRoutes_1.registerRoutes, { prefix: "/api/auth" });
 app.register(UsuarioRoutes_1.registerRoutes, { prefix: "/api/usuarios" });
 app.register(lichessStreamService_1.registerRoutes, { prefix: "/api/lichess" });
 app.register(LeccionesRoutes_1.registerRoutes, { prefix: "/api/lecciones" });
+app.register(fastify_multipart_1.default);
 app.register(jwt_1.default, {
     secret: process.env.JWT_SECRET,
 });
