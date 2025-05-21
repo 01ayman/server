@@ -1,5 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { updateUser, uploadAvatar } from "../repository/UsuarioRepository";
+import {
+  getPartidas,
+  registrarPartida,
+  updateUser,
+  uploadAvatar,
+} from "../repository/UsuarioRepository";
 import { Usuario } from "../models";
 import { enviarCorreoVerificacion } from "../utils/EmailService";
 import bcrypt from "bcryptjs";
@@ -24,8 +29,26 @@ export async function updateImage(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const { id, avatar } = request.body as any;
-  await uploadAvatar(id, avatar);
+  const data = await request.file();
+  if (!data) {
+    return reply.code(400).send({ error: "No se recibió ningún archivo" });
+  }
+
+  const { filename, mimetype, file } = data;
+
+  const user = request.user as any;
+  const userId = user.id;
+  if (!userId) {
+    return reply.code(401).send({ error: "No autenticado" });
+  }
+
+  const result = await uploadAvatar(userId, { file, mimetype, filename });
+
+  if ("error" in result) {
+    return reply.code(result.code).send({ error: result.message });
+  }
+
+  return reply.send({ message: result.message, url: result.url });
 }
 export async function updateName(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -93,8 +116,6 @@ export async function updateEmail(
     if (!usuario) {
       return reply.code(404).send({ error: "Usuario no encontrado" });
     }
-    console.log("\nasdfasdf");
-
     // 4. Verificar contraseña actual
     const isMatch = await bcrypt.compare(
       currentPassword,
@@ -133,4 +154,25 @@ export async function updateEmail(
     console.error("Error en update-email:", error);
     return reply.code(500).send({ error: "Error interno del servidor" });
   }
+}
+
+export async function insertarPartida(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const user = request.user as any;
+  const { partida } = request.body as any;
+  console.log("\n", JSON.stringify(user));
+  await registrarPartida(user.id, partida);
+  console.log(JSON.stringify(partida));
+}
+
+export async function obtenerPartidas(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const user = request.user as any;
+  console.log("\n", JSON.stringify(user));
+  const partidas = await getPartidas(user.id);
+  reply.send(partidas);
 }

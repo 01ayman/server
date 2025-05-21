@@ -1,7 +1,7 @@
 import { sequelize, testDBConnection } from "./db/Sequelize";
 import { registerRoutes as AuthRoutes } from "./routes/AuthRoutes";
 import { registerRoutes as UsuarioRoutes } from "./routes/UsuarioRoutes";
-import { registerRoutes as LichessRoutes } from "./services/lichessStreamService";
+import { registerRoutes as LichessRoutes } from "./routes/LichessRoutes";
 import { registerRoutes as LeccionesRoutes } from "./routes/LeccionesRoutes";
 import fastifySocketIO from "fastify-socket.io";
 import { setupSockets } from "./socket/socket";
@@ -34,12 +34,11 @@ app.register(fastifyCors, {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 });
-// Registrar rutas
+app.register(fastifyMultipart);
 app.register(AuthRoutes, { prefix: "/api/auth" });
 app.register(UsuarioRoutes, { prefix: "/api/usuarios" });
 app.register(LichessRoutes, { prefix: "/api/lichess" });
 app.register(LeccionesRoutes, { prefix: "/api/lecciones" });
-app.register(fastifyMultipart);
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET!,
@@ -48,12 +47,10 @@ app.register(jwt, {
 testDBConnection();
 async function start() {
   try {
-    // Conectar a la base de datos
 
     await sequelize.authenticate();
     console.log("✅ Conexión a MySQL OK");
 
-    // Sincronizar modelos
     sequelize
       .sync()
       .then(() => {
@@ -66,15 +63,14 @@ async function start() {
 
     await app.register(fastifySocketIO, {
       cors: {
-        origin: "*", // o tu frontend URL exacta
+        origin: "*",
       },
     });
 
     app.ready().then(() => {
-      setupSockets(app.io); // << ESTE ES IMPORTANTE
+      setupSockets(app.io); 
     });
 
-    // Lanzar servidor
     const port = parseInt(process.env.PORT || "3001");
     await app.listen({ port, host: "0.0.0.0" });
   } catch (error) {

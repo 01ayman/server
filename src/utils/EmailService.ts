@@ -17,22 +17,26 @@ export async function enviarCorreoVerificacion(
   id: number,
   nombre: string = "de nuevo,"
 ) {
-  const verificationLink = `http://localhost:5000/verify/${id}/${token}`;
+  try {
+    const verificationLink = `http://localhost:5000/verify/${id}/${token}`;
 
-  const mailOptions = {
-    from: `"ChessLearn" <${process.env.MAIL_USER}>`,
-    to: emailDestino,
-    subject: "Verifica tu cuenta en ChessLearn",
-    html: `
+    const mailOptions = {
+      from: `"ChessLearn" <${process.env.MAIL_USER}>`,
+      to: emailDestino,
+      subject: "Verifica tu cuenta en ChessLearn",
+      html: `
       <h2>Hola ${nombre} 👋,</h2>
       <p>Gracias por registrarte en ChessLearn.</p>
       <p>Por favor haz clic en el siguiente enlace para verificar tu cuenta:</p>
       <a href="${verificationLink}">Verificar cuenta</a>
       <p>¡Nos vemos en el tablero! ♟️</p>
     `,
-  };
+    };
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
+  } catch (err: any) {
+    console.error(err);
+  }
 }
 export async function enviarCorreoCambiarContrasena(
   emailDestino: string,

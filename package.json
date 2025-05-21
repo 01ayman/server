@@ -19,6 +19,7 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "emailjs-com": "^3.2.0",
     "fastify": "^4.29.1",

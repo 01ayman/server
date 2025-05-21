@@ -7,8 +7,6 @@ import {
   registrarUsuario,
   updateContrasena,
 } from "../controller/AuthController";
-import { enviarCorreoVerificacion } from "../utils/EmailService";
-import { verifyUserAgain } from "../repository/AuthRepository";
 
 export async function registerRoutes(server: FastifyInstance) {
   server.get("/verify/:id/:token", obtenerToken);

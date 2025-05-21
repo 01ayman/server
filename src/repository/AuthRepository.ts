@@ -242,6 +242,9 @@ export async function verificarLogin(
         id: usuario.id,
         nombre: usuario.nombre,
         correo: usuario.correo,
+        avatar: usuario.avatar,
+        elo: usuario.elo,
+        rol: usuario.rol,
       },
     };
     return data;

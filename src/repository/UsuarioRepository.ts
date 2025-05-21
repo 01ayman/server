@@ -1,7 +1,10 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import { chessError } from "../utils/Error";
-import { Usuario } from "../models";
+import { Partida, Usuario } from "../models";
 import bcrypt from "bcryptjs";
+import { Op } from "sequelize";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
@@ -92,8 +95,9 @@ export async function updateUser(
 export async function uploadAvatar(
   id: number,
   avatar: any
-): Promise<ResultUser> {
+): Promise<ResultUser & { url?: string }> {
   try {
+    console.log("\n", avatar);
     const validMimeTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!validMimeTypes.includes(avatar.mimetype)) {
       return chessError({
@@ -102,29 +106,91 @@ export async function uploadAvatar(
       });
     }
 
-    // Subir la imagen a Cloudinary
-    const result = await cloudinary.uploader.upload(avatar.file, {
-      folder: "usuarios", // Carpeta donde almacenar la imagen
-      public_id: `avatar_${id}`, // Puedes personalizar el nombre del archivo con el ID del usuario
-    });
+    const publicId = `usuarios/avatar_${id}`;
 
-    // Obtener la URL pública de la imagen desde Cloudinary
+    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "usuarios",
+          public_id: publicId,
+          overwrite: true,
+        },
+        (error, result) => {
+          if (error || !result) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+
+      avatar.file.pipe(uploadStream);
+    });
+    console.log("\n", result);
     const avatarUrl = result.secure_url;
 
-    // Buscar al usuario y actualizar su avatar
     const user = await Usuario.findByPk(id);
     if (!user) {
       return chessError({ code: 404, message: "Usuario no encontrado" });
     }
 
-    // Actualizar el campo avatar con la nueva URL
     user.avatar = avatarUrl;
     await user.save();
 
     return {
       code: 200,
       message: "Avatar actualizado correctamente",
+      url: avatarUrl,
     };
+  } catch (error) {
+    console.error(error);
+    return chessError({ code: 500, message: "Error al subir el avatar" });
+  }
+}
+export async function registrarPartida(
+  idUsuario: number,
+  partida: any
+): Promise<any> {
+  try {
+    const p = {
+      jugador_blancas: idUsuario,
+      ...partida,
+    };
+    const res = await Partida.create(p);
+  } catch (error) {
+    console.error(error);
+    return chessError({ code: 500, message: "Error al subir el avatar" });
+  }
+}
+export async function getPartidas(idUsuario: number): Promise<any> {
+  try {
+    const res = await Partida.findAll({
+      where: {
+        [Op.or]: [
+          { jugador_blancas: idUsuario },
+          { jugador_negras: idUsuario },
+        ],
+      },
+      order: [["creada_en", "DESC"]],
+    });
+    const partidas = res.map((p) => {
+      return {
+        id: p.id,
+        fecha_inicio: p.fecha_inicio,
+        fecha_final: p.fecha_final,
+        tiempo: p.tiempo,
+        fen_final: p.fen_final,
+        movimientos: p.movimientos,
+        contra_maquina: p.contra_maquina,
+        nivel_maquina: p.nivel_maquina,
+        creada_en: format(new Date(p.creada_en), "dd/MM/yyyy HH:mm", {
+          locale: es,
+        }),
+        id_usuario: idUsuario,
+        resultado: p.resultado,
+      };
+    });
+    return partidas;
   } catch (error) {
     console.error(error);
     return chessError({ code: 500, message: "Error al subir el avatar" });

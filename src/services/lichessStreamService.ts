@@ -5,34 +5,36 @@ import { PassThrough, Readable } from "stream";
 import { request as UndiciRequest } from "undici";
 const API_TOKEN = process.env.LICHESS_TOKEN;
 
-export async function registerRoutes(server: FastifyInstance) {
-  server.get("/stream/:gameId", streamGame);
-
-  server.get("/resign/:gameId", abandonarPartida);
-}
-
-async function abandonarPartida(request: FastifyRequest, reply: FastifyReply) {
-  const { gameId } = request.params as { gameId: string };
+export async function abandonarPartida(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { gameId } = request.params as any;
   const resignUrl = `https://lichess.org/api/board/game/${gameId}/resign`;
   try {
     const response = await fetch(resignUrl, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${API_TOKEN}`,
       },
     });
+    const result = await response.json();
 
     if (!response.ok) {
       reply.status(400).send({ ok: false });
+      return;
     }
 
-    reply.send({ ok: true });
+    reply.send(result);
+
+    reply.send(result);
   } catch (err: any) {
     console.log(err);
   }
 }
 
-async function streamGame(request: FastifyRequest, reply: FastifyReply) {
-  const { gameId } = request.params as { gameId: string };
+export async function streamGame(request: FastifyRequest, reply: FastifyReply) {
+  const { gameId } = request.params as any;
 
   const streamUrl = `https://lichess.org/api/board/game/stream/${gameId}`;
 
